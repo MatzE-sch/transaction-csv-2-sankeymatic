@@ -42,13 +42,13 @@ fn main() {
         // println!("{:?}", row);
         let regex_vec = read_regex_labels(files.regex.to_string()).unwrap();
 
-        let mut index = 0;
+        // let mut index = 0;
         for reg_labels in regex_vec {
             let reg = reg_labels.regex;
             let mut labels = reg_labels.labels;
             let re = Regex::new(reg.as_str()).unwrap();
-            index += 1;
-            println!("Test {}, {}", index, re);
+            // index += 1;
+            // println!("Test {}, {}", index, re);
             if re.is_match(&row.to_string()) {
                 // skip row if 1 label is ignored labels
                 for label in labels.split(' ') {
