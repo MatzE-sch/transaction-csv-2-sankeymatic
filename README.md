@@ -1,6 +1,6 @@
 # umsatz-csv-to-sankeymatic
 
-My first rust project.
+My first rust project.  
 Tool to convert a bank csv transaction export to the format needed by https://sankeymatic.com/ to visualize your money flow.
 
 ## sankeymatic:
