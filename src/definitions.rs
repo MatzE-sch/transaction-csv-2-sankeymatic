@@ -36,28 +36,32 @@ pub struct Cli {
         short = "t",
         long = "transactions",
         parse(from_os_str),
-        default_value = "data/transactions.csv"
+        default_value = "data/transactions.csv",
+        help = "path to csv transaction export"
     )]
     pub transactions: std::path::PathBuf,
     #[structopt(
         short = "o",
         long = "output",
         parse(from_os_str),
-        default_value = "data/output.txt"
+        default_value = "data/output.txt",
+        help = "path of output file, (todo: will create file?)"
     )]
     pub output: std::path::PathBuf,
     #[structopt(
         short = "r",
         long = "regex",
         parse(from_os_str),
-        default_value = "data/regex_labels.csv"
+        default_value = "data/regex_labels.csv",
+        help = "path to csv file for search patterns and how to label transactions (TODO: will create the file?)"
     )]
     pub regex: std::path::PathBuf,
     #[structopt(
         short = "i",
         long = "ignore",
         parse(from_os_str),
-        default_value = "data/ignored_labels.txt"
+        default_value = "data/ignored_labels.txt",
+        help = "path to file with lables to be ignored"
     )]
     pub ignored: std::path::PathBuf,
 }
