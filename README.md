@@ -4,7 +4,7 @@ My first rust project.
 Tool to convert a bank csv transaction export to the format needed by https://sankeymatic.com/ to visualize your money flow.
 
 ## sankeymatic:
-https://www.sankeymatic.com/build/?layout_style=auto&default_node_colorset=a&default_flow_inherit=outside_in&label_pos=inside&font_face=sans-serif
+https://www.sankeymatic.com/build/
 ### example output image
 ![](https://i.redd.it/q0dfzzlxc3n41.png)
 
