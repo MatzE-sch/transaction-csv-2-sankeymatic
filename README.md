@@ -6,15 +6,15 @@ Tool to convert a bank csv transaction export to the format needed by https://sa
 ## sankeymatic:
 https://www.sankeymatic.com/build/?layout_style=auto&default_node_colorset=a&default_flow_inherit=outside_in&label_pos=inside&font_face=sans-serif
 ### example output image
-https://i.redd.it/q0dfzzlxc3n41.png
+![](https://i.redd.it/q0dfzzlxc3n41.png)
 
 ## troubleshooting
 when your output image looks like this:  
-![](output_with_loop.png)
+![](examples/output_with_loop.png)
 you have a circle in your ouput data
 
 ## csv example data:
-[example file](umsatz-example.csv)
+[example file](data/transactions.csv)
 
 
 ## TODO list:
