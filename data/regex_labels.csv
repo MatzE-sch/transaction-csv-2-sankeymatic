@@ -1,0 +1,24 @@
+regex,labels
+^DB,Mobilität Bahn
+^\d{3} EDEKA,food supermarkt
+^ALDI,food supermarkt
+^DEAN DAVID,food extern salad
+^CCCV GmbH .. RC3,Events CCC RC3
+"PayPal Europe S.a.r.l. et Cie S.C.A .. PP.6102.PP . Takeaway.com Payments B.V., Ihr Einkauf bei Takeaway.com Payments B.V.",PayPal
+"^PayPal Europe S.a.r.l. et Cie S.C.A .. PP.6102.PP . , Ihr Einkauf bei",PayPal
+^PIZZERIA DA ZAZA,food extern pizza
+^Ristorante Primavera,food extern pizza
+^.......HSA MENSA,food extern hsa-mensa
+^Yannick Voss .. Stromkosten,Stromkosten
+^REWE SAGT DANKE,food supermarkt
+^Stadtwerke,stromkosten
+"PayPal Europe S.a.r.l. et Cie S.C......PP.6102.PP . ticket i/O GmbH, Ihr Einkauf bei ticket i/O GmbH",PayPal Events
+^PayPal .* DB Vertrieb,mobilität bahn
+^NORMA SAGT DANKE,food supermarkt norma
+^Baeckerei Konditorei,food extern bäckerei
+............STADTSPARKASSE,sparkasse bar
+Fahrkostenabrechnung.*## \d,reisekosten
+....E-XPRESS,food supermarkt
+^PayPal.*Bolt,mobilität escooter
+HANS IM GLUECK,food extern burger
+DVB.*Dresden,mobilität öpnv
