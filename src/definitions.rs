@@ -64,6 +64,13 @@ pub struct Cli {
         help = "path to file with lables to be ignored"
     )]
     pub ignored: std::path::PathBuf,
+    #[structopt(
+        short = "f",
+        long = "format",
+        default_value = "sparkasse",
+        help = "possible values: get_possible_formats_str() (TODO: acrually run this function here without failing on ownership problems again)"
+    )]
+    pub format: String,
 }
 
 pub fn cli_to_files(cli_args: Cli) -> Files {
