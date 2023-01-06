@@ -4,10 +4,7 @@ use regex_importer::read_regex_labels;
 mod definitions;
 use definitions::*;
 
-use csv::ReaderBuilder;
-use csv::StringRecord;
 use csv::Writer;
-use serde::Deserialize;
 use std::error::Error;
 
 use regex::Regex;
@@ -23,7 +20,7 @@ use structopt::StructOpt;
 
 fn main() {
     let args = Cli::from_args();
-    let files = cli_to_files(args);
+    let files = cli_to_files(&args);
     let ignore = fs::read_to_string(files.ignored).unwrap_or_default();
 
     // println!("transactions: \t{}", args.transactions.to_str().unwrap());
@@ -33,7 +30,13 @@ fn main() {
 
     init_output(files.output.to_string());
 
-    let umsatz = read_umsatz_records(files.transactions.to_string()).unwrap();
+    let read_transaction_records = match &*args.format {
+        "sparkasse" => read_sparkasse_records,
+        "vrbank" => read_vrbank_records,
+        _ => panic!("provide a valid csv format name"),
+    };
+
+    let umsatz = read_transaction_records(files.transactions.to_string()).unwrap();
 
     'row: for row in umsatz {
         if row.betrag == "0,00" {
@@ -42,13 +45,13 @@ fn main() {
         // println!("{:?}", row);
         let regex_vec = read_regex_labels(files.regex.to_string()).unwrap();
 
-        let mut index = 0;
+        // let mut index = 0;
         for reg_labels in regex_vec {
             let reg = reg_labels.regex;
             let mut labels = reg_labels.labels;
             let re = Regex::new(reg.as_str()).unwrap();
-            index += 1;
-            println!("Test {}, {}", index, re);
+            // index += 1;
+            // println!("Test {}, {}", index, re);
             if re.is_match(&row.to_string()) {
                 // skip row if 1 label is ignored labels
                 for label in labels.split(' ') {
@@ -175,87 +178,6 @@ fn write_to_csv(file_name: String, reglabels: RegLabels) -> Result<(), Box<dyn E
     wtr.write_record(&[reglabels.reg.to_string(), reglabels.labels_str()])?;
     wtr.flush()?;
     Ok(())
-}
-
-fn read_umsatz_records(file_name: String) -> Result<Vec<CsvRecord>, Box<dyn Error>> {
-    #[allow(dead_code)]
-    #[derive(Debug, Deserialize)]
-    struct Record {
-        auftragskonto: String,
-        buchungstag: String,
-        valutadatum: String,
-        buchungstext: String,
-        verwendungszweck: String,
-        glaeubiger_id: String,
-        mandatsreferenz: String,
-        kundenreferenz: String,
-        sammlerreferenz: String,
-        lastschrift_ursprungsbetrag: String,
-        auslagenersatz_ruecklastschrift: String,
-        beguenstigter_zahlungspflichtiger: String,
-        iban: String,
-        bic: String,
-        betrag: String,
-        waehrung: String,
-        info: String,
-    }
-    let mut rdr = ReaderBuilder::new().delimiter(b';').from_path(file_name)?;
-    let header = StringRecord::from(vec![
-        // "Auftragskonto","Buchungstag","Valutadatum","Buchungstext","Verwendungszweck","Glaeubiger ID","Mandatsreferenz","Kundenreferenz (End-to-End)","Sammlerreferenz","Lastschrift Ursprungsbetrag","Auslagenersatz Ruecklastschrift","Beguenstigter/Zahlungspflichtiger","Kontonummer/IBAN","BIC (SWIFT-Code)","Betrag","Waehrung","Info"
-        "auftragskonto",
-        "buchungstag",
-        "valutadatum",
-        "buchungstext",
-        "verwendungszweck",
-        "glaeubiger_id",
-        "mandatsreferenz",
-        "kundenreferenz",
-        "sammlerreferenz",
-        "lastschrift_ursprungsbetrag",
-        "auslagenersatz_ruecklastschrift",
-        "beguenstigter_zahlungspflichtiger",
-        "iban",
-        "bic",
-        "betrag",
-        "waehrung",
-        "info",
-    ]);
-    rdr.set_headers(header);
-
-    let mut records: Vec<CsvRecord> = vec![];
-    for result in rdr.records().skip(1) {
-        //skip header, why ever
-        let record = result?;
-        let header = StringRecord::from(vec![
-            // "Auftragskonto","Buchungstag","Valutadatum","Buchungstext","Verwendungszweck","Glaeubiger ID","Mandatsreferenz","Kundenreferenz (End-to-End)","Sammlerreferenz","Lastschrift Ursprungsbetrag","Auslagenersatz Ruecklastschrift","Beguenstigter/Zahlungspflichtiger","Kontonummer/IBAN","BIC (SWIFT-Code)","Betrag","Waehrung","Info"
-            "auftragskonto",
-            "buchungstag",
-            "valutadatum",
-            "buchungstext",
-            "verwendungszweck",
-            "glaeubiger_id",
-            "mandatsreferenz",
-            "kundenreferenz",
-            "sammlerreferenz",
-            "lastschrift_ursprungsbetrag",
-            "auslagenersatz_ruecklastschrift",
-            "beguenstigter_zahlungspflichtiger",
-            "iban",
-            "bic",
-            "betrag",
-            "waehrung",
-            "info",
-        ]); // einfach nochmal weil borrow move zeugs, keine ahnung, machs besser...
-        let row: Record = record.deserialize(Some(&header))?;
-        // println!("{:?}", row);
-        records.push(CsvRecord {
-            begunst: row.beguenstigter_zahlungspflichtiger,
-            verwend: row.verwendungszweck,
-            betrag: row.betrag,
-            datum: row.buchungstag,
-        });
-    }
-    Ok(records)
 }
 
 fn write_output(file_name: String, s: String) {
