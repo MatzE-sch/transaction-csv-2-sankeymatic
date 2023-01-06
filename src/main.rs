@@ -113,8 +113,7 @@ fn main() {
             let mut reg = reg_opt.unwrap();
             // println!("Entered regex: {:?}", reg);
             if reg.to_string().is_empty() {
-                // not totally bugfree if the transaction contains regex symbols
-                reg = Regex::new(&row.to_string()).unwrap();
+                reg = Regex::new(&regex::escape(&row.to_string())).unwrap();
             }
             if reg.is_match(&row.to_string()) {
                 regex_accepted = true;
@@ -126,7 +125,6 @@ fn main() {
                     .split(' ')
                     .map(|string_ref| string_ref.to_string())
                     .collect();
-                // TODO: save the regex and labels
                 match write_to_csv(
                     files.regex.to_string(),
                     RegLabels {
