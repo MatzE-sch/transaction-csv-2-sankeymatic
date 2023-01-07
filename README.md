@@ -16,6 +16,8 @@ you have a circle in your ouput data
 ## csv example data:
 [example file](data/transactions.csv)
 
+sparkasse csv export is in latin1 :(
+
 
 ## TODO list:
 - clear input buffer before requesting input
@@ -34,11 +36,6 @@ you have a circle in your ouput data
 - generate image automatically
     - is there an api for https://www.sankeymatic.com/build/?
     - download and render local with the sankeymatic js source?
-- bugs
-    - wrong number displayed with this transaction: 
-    `DE---iban---,07.10.22,07.10.22,ONLINE-UEBERWEISUNG,"Danke f�rs leien :D DATUM 06.10.2022, 20.59 UHR ",,,,,,,name name,DE---iban---,BIC,-50,EUR,Umsatz gebucht`
-    `DE---iban---,28.02.22,28.02.22,ONLINE-UEBERWEISUNG,"Danke f�r ... :) hier ein Stack Geld DATUM 26.02.2022, 12.08 UHR ",,,,,,,name name,DE--iban--,BIC,-64,EUR,Umsatz gebucht`
-    probably because encoding error ü?
 - missing checks:
     - with sankeymatic.com you are not allowed to have circles.
       circle detection is missing 

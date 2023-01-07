@@ -8,7 +8,10 @@ use csv::StringRecord;
 use serde::Deserialize;
 use std::error::Error;
 
+use std::fs::File;
 
+use encoding_rs::Encoding;
+use std::io::prelude::*;
 
 #[derive(Debug)]
 pub struct CsvRecord {
@@ -93,7 +96,7 @@ pub fn cli_to_files(cli_args: &Cli) -> Files {
         },
         output: match fs::metadata(output_path) {
             Ok(_) => output_path.to_str().unwrap().to_string(),
-            Err(err) => panic!("output: {:?} {}", output_path, err),
+            Err(_) => cli_args.output.to_str().unwrap().to_string(), //file will be created
         },
         regex: match fs::metadata(regex_path) {
             Ok(_) => regex_path.to_str().unwrap().to_string(),
@@ -102,7 +105,7 @@ pub fn cli_to_files(cli_args: &Cli) -> Files {
         ignored: match fs::metadata(ignore_path) {
             Ok(_) => ignore_path.to_str().unwrap().to_string(),
             Err(_err) => {
-                println!("ignored labels file not found: {:?}", ignore_path);
+                println!("Warn: ignored labels file not found: {:?}", ignore_path);
                 String::from("")
                 // panic!("ignored: {:?} {}", ignore_path, err)
             }
@@ -193,11 +196,11 @@ pub fn read_vrbank_records(file_name: String) -> Result<Vec<CsvRecord>, Box<dyn 
             "glaeubiger_id",
             "mandatsreferenz",
         ]); // einfach nochmal weil borrow move zeugs, keine ahnung, machs besser...
-        let row: Record = match record.deserialize(Some(&header)){
+        let row: Record = match record.deserialize(Some(&header)) {
             Ok(row) => row,
             Err(error) => {
                 println!("Are you shure vrbank is the right format for your csv?");
-                panic!("{}",error)
+                panic!("{}", error)
             }
         };
         // println!("{:?}", row);
@@ -233,7 +236,17 @@ pub fn read_sparkasse_records(file_name: String) -> Result<Vec<CsvRecord>, Box<d
         waehrung: String,
         info: String,
     }
-    let mut rdr = ReaderBuilder::new().delimiter(b';').from_path(file_name)?;
+    let mut file = File::open(file_name)?;
+    let mut contents = Vec::new();
+    file.read_to_end(&mut contents)?;
+
+    // Convert the data to utf8
+    let latin1 = Encoding::for_label(b"latin1");
+    let (utf8, _, _) = latin1.expect("REASON, i dont know what to put here, but thanks @compiler that you told me i need .expect(\"REASON\") here").decode(&contents);
+
+    let mut rdr = ReaderBuilder::new()
+        .delimiter(b';')
+        .from_reader(utf8.as_bytes());
     let header = StringRecord::from(vec![
         // "Auftragskonto","Buchungstag","Valutadatum","Buchungstext","Verwendungszweck","Glaeubiger ID","Mandatsreferenz","Kundenreferenz (End-to-End)","Sammlerreferenz","Lastschrift Ursprungsbetrag","Auslagenersatz Ruecklastschrift","Beguenstigter/Zahlungspflichtiger","Kontonummer/IBAN","BIC (SWIFT-Code)","Betrag","Waehrung","Info"
         "auftragskonto",
@@ -257,9 +270,14 @@ pub fn read_sparkasse_records(file_name: String) -> Result<Vec<CsvRecord>, Box<d
     rdr.set_headers(header);
 
     let mut records: Vec<CsvRecord> = vec![];
+
     for result in rdr.records().skip(1) {
         //skip header, why ever
-        let record = result?;
+        let record = match result {
+            Ok(r) => r,
+            Err(err) => panic!("{err}"),
+        };
+
         let header = StringRecord::from(vec![
             // "Auftragskonto","Buchungstag","Valutadatum","Buchungstext","Verwendungszweck","Glaeubiger ID","Mandatsreferenz","Kundenreferenz (End-to-End)","Sammlerreferenz","Lastschrift Ursprungsbetrag","Auslagenersatz Ruecklastschrift","Beguenstigter/Zahlungspflichtiger","Kontonummer/IBAN","BIC (SWIFT-Code)","Betrag","Waehrung","Info"
             "auftragskonto",
@@ -280,13 +298,14 @@ pub fn read_sparkasse_records(file_name: String) -> Result<Vec<CsvRecord>, Box<d
             "waehrung",
             "info",
         ]); // einfach nochmal weil borrow move zeugs, keine ahnung, machs besser...
-        let row: Record = match record.deserialize(Some(&header)){
+
+        let row: Record = match record.deserialize(Some(&header)) {
             Ok(row) => row,
             Err(error) => {
                 println!("Are you shure sparkasse is the right format for your csv?");
-                panic!("{}",error)
+                panic!("{}", error)
             }
-        };        // println!("{:?}", row);
+        }; // println!("{:?}", row);
         records.push(CsvRecord {
             begunst: row.beguenstigter_zahlungspflichtiger,
             verwend: row.verwendungszweck,
