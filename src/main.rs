@@ -56,7 +56,7 @@ fn main() {
                 // skip row if 1 label is ignored labels
                 for label in labels.split(' ') {
                     if ignore.contains(label) {
-                        println!("ignored:");
+                        cprintln!("<dim>ignored</>");
                         // println!("label {label}");
                         // println!("regex {reg}");
                         continue 'row;
@@ -71,7 +71,6 @@ fn main() {
 
                 let mut output = String::from("");
 
-                // let mut von = "Budget";
                 let mut betrag = row.betrag.replace(",", ".").parse::<f64>().unwrap();
 
                 if betrag < 0.0 {
@@ -164,8 +163,6 @@ fn write_to_csv(file_name: String, reglabels: RegLabels) -> Result<(), Box<dyn E
         .open(file_name)
         .unwrap();
     let mut wtr = Writer::from_writer(file);
-    // wtr.write_record(&["a", "b", "c"])?;
-    // wtr.write_record(&["x", "y", "z"])?;
     wtr.write_record(&[reglabels.reg.to_string(), reglabels.labels_str()])?;
     wtr.flush()?;
     Ok(())
