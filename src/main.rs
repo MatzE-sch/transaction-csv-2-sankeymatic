@@ -143,15 +143,8 @@ fn main() {
 
         // println!()
     }
-    cprintln!("<bright-green>Gratulation, nichts unkategorisiertes!</>");
+    cprintln!("<bright-green>Conratulation, nothing uncategorized!</>");
     cprintln!("Go to <bright-blue>https://www.sankeymatic.com/build/</> and paste your output")
-
-    // verwendungszweck betrag begünstigter
-    // Gehalt Oktober   10,34  Restaurant Miramare
-
-    // durch alle regexen durchgehen
-    // wenn match
-    // <Vorgänger> <[betrag]> <Begünstigter>
 }
 
 fn user_input() -> String {
