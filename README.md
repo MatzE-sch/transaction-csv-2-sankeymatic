@@ -11,7 +11,7 @@ https://www.sankeymatic.com/build/
 ## troubleshooting
 When your output image looks like this:  
 ![](examples/output_with_loop.png)
-you have a circle in your input data.
+you have a circle in your output data.
 
 ## csv example data:
 [example file](data/transactions.csv)
