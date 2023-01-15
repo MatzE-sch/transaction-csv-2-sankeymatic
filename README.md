@@ -9,9 +9,9 @@ https://www.sankeymatic.com/build/
 ![](https://i.redd.it/q0dfzzlxc3n41.png)
 
 ## troubleshooting
-when your output image looks like this:  
+When your output image looks like this:  
 ![](examples/output_with_loop.png)
-you have a circle in your ouput data
+you have a circle in your output data.
 
 ## csv example data:
 [example file](data/transactions.csv)
@@ -40,3 +40,4 @@ sparkasse csv export is in latin1 :(
     - with sankeymatic.com you are not allowed to have circles.
       circle detection is missing 
       circles are quite easyly created with a regex, and a company refunding something!
+- tests
